@@ -335,44 +335,44 @@ payment_network = "holesky"
 model = "casperhansen/llama-3-70b-instruct-awq"
 huggingface_auth_token = os.environ['HF_TOKEN']
 
-questions = [	"Who won the World Cup in 2022?"
-				"Where are a dog's sweat glands located?"
-				"Who narrates the adventures of Sherlock Holmes?"
-				"Who was the fortieth president of the USA?"
-				"What does Bistro mean in Russian?"
-				"How many nautical miles are there in one degree of latitude?"
-				"Who founded the French Academy?"
-				"What is the longest river in Western Europe?"
-				"Who is inseparable from Bonnie Parker?"
-				"What is the northern slope of a valley called?"
-				"Who is the Sun God in ancient Egypt?"
-				"What is the name of the doctor in Cluedo?"
-				"What is the capital of Bermuda?"
-				"What was the first name of the game of bowls?"
-				"Which being walks on 4 legs in the morning, 2 at lunchtime and 3 in the evening?"
-				"How long does it take for the Earth to revolve around the Sun?"
-				"In which country are Afrikaans and English spoken?"
-				"Which city built the first metro?"
-				"Who first set foot on the Moon?"
-				"Which of the five senses does the snake lack?"
-				"What does the penguin eat?"
-				"What openings do fish and violins have in common?"
-				"On which continent is Adélie Land located?"
-				"What does a conchyophile collect?"
-				"Where are the most expensive seats in a bullfight arena?"
-				"Where was Wolfgang Amadeus Mozart born?"
-				"Which people invented gunpowder?"
-				"What are Rubens first names?"
-				"Which river has the largest flow in the world?"
-				"How many players are there on the field on a baseball team?"
-				"What do you call a boat with three hulls?"
-				"What does a seringueiro harvest in Brazil?"
-				"Who is The Magnificent”?"
-				"Who is the heroine of Notre-Dame de Paris?"
-				"Which capital stands at the confluence of the Blue Nile and the White Nile?"
-				"Who had tiny tootsies?"
-				"On which side of the plate should the wine glass be placed?"
-			]
+questions = 	[	"Who won the World Cup in 2022?",
+			"Where are a dog's sweat glands located?",
+			"Who narrates the adventures of Sherlock Holmes?",
+			"Who was the fortieth president of the USA?",
+			"What does Bistro mean in Russian?",
+			"How many nautical miles are there in one degree of latitude?",
+			"Who founded the French Academy?",
+			"What is the longest river in Western Europe?",
+			"Who is inseparable from Bonnie Parker?",
+			"What is the northern slope of a valley called?",
+			"Who is the Sun God in ancient Egypt?",
+			"What is the name of the doctor in Cluedo?",
+			"What is the capital of Bermuda?",
+			"What was the first name of the game of bowls?",
+			"Which being walks on 4 legs in the morning, 2 at lunchtime and 3 in the evening?",
+			"How long does it take for the Earth to revolve around the Sun?",
+			"In which country are Afrikaans and English spoken?",
+			"Which city built the first metro?",
+			"Who first set foot on the Moon?",
+			"Which of the five senses does the snake lack?",
+			"What does the penguin eat?",
+			"What openings do fish and violins have in common?",
+			"On which continent is Adélie Land located?",
+			"What does a conchyophile collect?",
+			"Where are the most expensive seats in a bullfight arena?",
+			"Where was Wolfgang Amadeus Mozart born?",
+			"Which people invented gunpowder?",
+			"What are Rubens first names?",
+			"Which river has the largest flow in the world?",
+			"How many players are there on the field on a baseball team?",
+			"What do you call a boat with three hulls?",
+			"What does a seringueiro harvest in Brazil?",
+			"Who is The Magnificent”?",
+			"Who is the heroine of Notre-Dame de Paris?",
+			"Which capital stands at the confluence of the Blue Nile and the White Nile?",
+			"Who had tiny tootsies?",
+			"On which side of the plate should the wine glass be placed?"
+		]
 
 #############################################################################
 
