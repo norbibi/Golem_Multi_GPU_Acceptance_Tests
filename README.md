@@ -68,7 +68,13 @@ The creation of the image is done in 2 steps:
 
 **Run test**  
 
-The simple python test script test_gw_vllm_x4.py uses the Golem-workers library to create a cluster, add a multi-GPU provider node, launch the VLLM server on it and execute our inference queries. 
+The simple python test script test_gw_vllm_x4.py uses the Golem-workers library to create a cluster, add a multi-GPU provider node, launch the VLLM server on it and execute our inference queries.
+  
+Create your authentification token (read) on Huggingface then export it:  
+``` 
+export HF_TOKEN=YOUR_TOKEN
+```
+then launch the script:  
 ``` 
 python3 test_gw_vllm_x4.py
 ```
