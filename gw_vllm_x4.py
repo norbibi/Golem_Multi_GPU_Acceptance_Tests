@@ -65,7 +65,7 @@ def send_request_delete_node(json_node_id):
 
 #############################################################################
 
-def get_json_market_config(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity):
+def get_json_market_config(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, node_name):
 	return {
 		"market_config": {
 		    "demand": {
@@ -86,7 +86,8 @@ def get_json_market_config(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_qua
 			        }
 		      	],
 		      	"constraints": [
-		        	f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}"
+		        	f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}",
+		        	f"golem.node.id.name={node_name}"
 		      	]
 		    }
 		}
@@ -142,7 +143,7 @@ def get_json_cluster_id(cluster_id):
 		"cluster_id": cluster_id
 	}
 
-def get_json_node_config_vllm_multigpu(cluster_id, subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, deploy_timeout_minutes, huggingface_auth_token, model_repo_name):
+def get_json_node_config_vllm_multigpu(cluster_id, node_name, subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, deploy_timeout_minutes, huggingface_auth_token, model_repo_name):
 	model_params = models_tested_with_succes[model_repo_name]
 	add_params = ""
 	for key, value in model_params.items():
@@ -174,7 +175,8 @@ def get_json_node_config_vllm_multigpu(cluster_id, subnet_tag, min_mem_gib, min_
 						}
 					],
 					"constraints": [
-						f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}"
+						f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}",
+		        		f"golem.node.id.name={node_name}"
 					]
 				}
 			},
@@ -222,8 +224,8 @@ def get_json_node_id(cluster_id, node_id):
 
 #############################################################################
 
-def get_proposals(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity):
-	json_market_config = get_json_market_config(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity)
+def get_proposals(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, node_name):
+	json_market_config = get_json_market_config(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, node_name)
 	proposals = send_request_get_proposals(json_market_config)
 	if proposals.code != 200:
 		print("Error retrieving proposals")
@@ -304,7 +306,7 @@ def wait_model_ready(model):
 		time.sleep(10)
 
 def usage():
-	print("python3 test_gw_vllm_x4.py model")
+	print("python3 test_gw_vllm_x4.py model node_name")
 	print("Model accpeted are:")
 	for model in models_tested_with_succes.keys():
 		print(f"	- {model}")

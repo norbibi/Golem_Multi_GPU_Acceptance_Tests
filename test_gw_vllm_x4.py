@@ -19,17 +19,18 @@ huggingface_auth_token = os.environ['HF_TOKEN']
 
 #############################################################################
 
-if len(sys.argv) != 2:
+if len(sys.argv) != 3:
 	usage()
 
 model = sys.argv[1]
+node_name = sys.argv[2]
 
 if model not in models_tested_with_succes.keys():
 	usage()
 
 #############################################################################
 
-def signal_handler():
+def signal_handler(*args):
 	print("Exiting")
 	if node_id is not None:
 		delete_node(cluster_id, node_id)
@@ -40,11 +41,13 @@ signal.signal(signal.SIGINT, signal_handler)
 
 ###### Verify if provider available(s) ######################################
 
-proposals = get_proposals(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity)
+proposals = get_proposals(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, node_name)
 if proposals is None:
 	quit()
 else:
-	print(f"Found {len(proposals)} provider(s)")
+	print(f"Provider {node_name} found")
+	json_pretty_print(proposals)
+	print("\n")
 
 ##### Create cluster ########################################################
 
@@ -58,7 +61,7 @@ time.sleep(5)
 
 ##### Add node to cluster ###################################################
 
-json_node_config = get_json_node_config_vllm_multigpu(cluster_id, subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, deploy_timeout_minutes, huggingface_auth_token, model)
+json_node_config = get_json_node_config_vllm_multigpu(cluster_id, node_name, subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, deploy_timeout_minutes, huggingface_auth_token, model)
 node = create_node(json_node_config)
 if node is not None:
 	node_id = node['node_id']
