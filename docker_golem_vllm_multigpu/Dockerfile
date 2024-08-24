@@ -224,6 +224,9 @@ RUN apt-get update \
     curl  \
     screen \
     dnsutils \
+    openssh-server \
+    nano \
+    nvtop \
   && apt-get autoremove \
   && rm -rf /var/lib/apt/lists/*
 
