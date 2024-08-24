@@ -26,7 +26,7 @@ wait_for_service_ready "8000/health" &
 python3 maintenance_server.py --events_file $EVENTS_FILE_PATH --port $MAINTENANCE_SERVER_PORT &
 
 PARSED_OPTIONS=$(getopt -o '' --long model_repo_name:,startup_script_url:,huggingface_auth_token:,tensor_parallel_size: -- "$@" )
-model_repo_name="" startup_script_url="" huggingface_auth_token="" tensor_parallel_size=""
+model_repo_name="" startup_script_url="" huggingface_auth_token="" tensor_parallel_size="" max_model_len="" gpu_memory_utilization="" max_num_seqs="" enforce_eager="" revision=""
 
 while true; do
   case "$1" in
@@ -34,6 +34,11 @@ while true; do
     --startup_script_url) startup_script_url=$2; shift 2;;
     --huggingface_auth_token) huggingface_auth_token=$2; shift 2;;
     --tensor_parallel_size) tensor_parallel_size=$2; shift 2;;
+    --max_model_len) max_model_len=$2; shift 2;;
+    --gpu_memory_utilization) gpu_memory_utilization=$2; shift 2;;
+    --max_num_seqs) max_num_seqs=$2; shift 2;;
+    --enforce_eager) enforce_eager=$2; shift 2;;
+    --revision) enforce_eager=$2; shift 2;;
     *) break;;
 esac
 done
@@ -77,4 +82,27 @@ nvidia-smi 2>&1 | tee /workspace/output/nvidia-smi.log
 
 echo "Starting service..."
 cd /workspace/
-python3 -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 8000 --model "$model_repo_name" --tensor-parallel-size $tensor_parallel_size --download-dir /workspace/models 2>&1 | tee /workspace/output/output.log
+
+cmd="python3 -m vllm.entrypoints.openai.api_server --host 0.0.0.0 --port 8000 --model $model_repo_name --tensor-parallel-size $tensor_parallel_size --download-dir /workspace/models"
+
+if [[ ! -z "${max_model_len}" ]]; then
+  cmd+=" --max-model-len $max_model_len"
+fi
+
+if [[ ! -z "${gpu_memory_utilization}" ]]; then
+  cmd+=" --gpu-memory-utilization $gpu_memory_utilization"
+fi
+
+if [[ ! -z "${max_num_seqs}" ]]; then
+  cmd+=" --max-num-seqs $max_num_seqs"
+fi
+
+if [[ ! -z "${enforce_eager}" ]]; then
+  cmd+=" --enforce_eager"
+fi
+
+if [[ ! -z "${revision}" ]]; then
+  cmd+=" --revision $revision"
+fi
+
+$cmd 2>&1 | tee /workspace/output/output.log
