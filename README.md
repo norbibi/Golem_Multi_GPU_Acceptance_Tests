@@ -1,15 +1,11 @@
-# Golem Multi-GPU Acceptance
+# Golem Multi-GPU Acceptance Tests
 
-The purpose of this repo is to validate the multi-GPU runtime (beta) of Golem providers.  
-  
-One of the goals of multi-GPU is to use the VLLM framework in order to be able to do inference on LLM models larger than the VRAM of a single GPU.  
-  
-This is what we propose to do with for example the casperhansen/llama-3-70b-instruct-awq model using a provider equipped with 4x 24GB GPUs.  
-  
-We will use the python package golem-workers which is an OpenAPI compatible REST API for managing clusters of Golem providers.  
+The purpose of this repo is to validate the Golem multi-GPU runtime (beta).  
+One of the goals of multi-GPU is to use the VLLM framework in order to do inference on LLM models larger than the VRAM of a single GPU.  
+This is what we propose to do on Threadripper providers equipped with 4xRTX4090 (256 GB RAM, 4 TB NVME).  
+We will use the golem-workers python package which is an OpenAPI compatible REST API to manage Golem provider clusters. 
 
 **Create GVMI VLLM v0.5.4**  
-  
 The creation of the image is done in 2 steps:  
 - creation of an ubuntu 20.04 image with the NVIDIA 550 driver and CUDA 12.4 (on which VLLM v0.5.4 is based)  
   I broke this step into 2 because not all GPU applications need CUDA.  
@@ -23,65 +19,180 @@ The creation of the image is done in 2 steps:
   cd docker_golem_cuda_12_4_1_nvidia_555_58_ubuntu_20_04
   docker build -t maugnorbert/docker_golem_cuda_12_4_1_nvidia_555_58_ubuntu_20_04 .
   ``` 
-
 - Installation and build of VLLM on this image (including customization for use on Golem)  
-  This image has already been built and pushed to the Golem registry under the tag maugnorbert/vllm_multigpu:11  
+  This image has already been built and pushed to the Golem registry under the tag maugnorbert/vllm_multigpu:17  
   ``` 
   cd docker_golem_vllm_multigpu
   git clone --depth 1 --branch v0.5.4 https://github.com/vllm-project/vllm.git
-  DOCKER_BUILDKIT=1 docker build --tag maugnorbert/vllm_multigpu:11 .
+  DOCKER_BUILDKIT=1 docker build --tag maugnorbert/vllm_multigpu:17 .
   ```
-
-**Install and run Golem-Worker Webserver**  
   
-1. Install golem-workers via:
-   ```
-   pip install golem-workers
-   ```
-   This step should install `yagna` binary for the next steps.
-2. Start `golem-node` instance. This will occupy your terminal session, so it's best to do it in separate session.
-   ```
-   yagna service start
-   ```
-3. Prepare some funds for Golem's free test network. 
-   Note that this step is needed mostly once per `golem-node` installation. 
-   ```
-   yagna payment fund
-   ```
-4. Create new `golem-node` application token
-   ```
-   yagna app-key create <your-token-name>
-   ```
-   and put generated app-key into the `.env` file in the current directory
-   ```
-   YAGNA_APPKEY=<your-application-token>
-   ```
-5. If you want to use Golem Reputation put new entry in `.env` file in the current directory
-   ```
-   GLOBAL_CONTEXTS=["golem_reputation.ReputationService"]
-   ```
-6. Start golem-workers web server instance
-   ```
-   uvicorn golem_workers.entrypoints.web.main:app
-   ```
+**Install and run Golem-Worker Webserver**  
+Check https://github.com/golemfactory/golem-workers
 
 
 **Run test**  
-
-The simple python test script test_gw_vllm_x4.py uses the Golem-workers library to create a cluster, add a multi-GPU provider node, launch the VLLM server on it and execute our inference queries.
+The python test script test_gw_vllm_x4.py uses the Golem-workers library to create a cluster, add a multi-GPU provider node, launch the VLLM server on it and execute our inference queries.
   
-Create your authentification token (read) on Huggingface then export it:  
+Create your authentification token (read) on Huggingface and export it:  
 ``` 
 export HF_TOKEN=YOUR_TOKEN
 ```
-then launch the script:  
+Usage:
 ``` 
-python3 test_gw_vllm_x4.py
+python3 test_gw_vllm_x4.py model node_name
+Accepted models are:
+	- casperhansen/llama-3-70b-instruct-awq
+	- hugging-quants/Meta-Llama-3.1-70B-Instruct-AWQ-INT4
+	- MaziyarPanahi/Mixtral-8x22B-Instruct-v0.1-AWQ
+	- ybelkada/Mixtral-8x7B-Instruct-v0.1-AWQ
+	- TheBloke/Mixtral-8x7B-Instruct-v0.1-GPTQ
+	- mistral-community/Mistral-7B-Instruct-v0.3
+	- meta-llama/Meta-Llama-3.1-8B-Instruct
 ```
+
+<details>
+  <summary>Example</summary>
   
-```
-ubuntu@ubuntu-Standard-PC-i440FX-PIIX-1996:~/golem-workers$ python3 test_gw_vllm_x4.py 
-Found 1 provider(s)
+  ```
+ubuntu@ubuntu-Standard-PC-i440FX-PIIX-1996:~/golem-workers$ python3 test_gw_vllm_x4.py meta-llama/Meta-Llama-3.1-8B-Instruct pve2
+Provider pve2 found
+[
+  {
+    "proposal_id": "R-8f5add36961db48bfff8720284f204ef3bf54c38415b7fc0b4540a99d0945561",
+    "issuer_id": "0xf0d2e5fd56dd6820d727111d26907b883d36099a",
+    "state": "Initial",
+    "timestamp": "2024-08-24T16:06:24.506985Z",
+    "properties": {
+      "golem.!exp.gap-35.v1.inf.gpu.cuda.driver.version": "535.183.01",
+      "golem.!exp.gap-35.v1.inf.gpu.cuda.version": "12.2",
+      "golem.!exp.gap-35.v1.inf.gpu.d0.clock.graphics.mhz": 3150,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.clock.memory.mhz": 10501,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.clock.sm.mhz": 3150,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.clock.video.mhz": 2415,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.cuda.caps": "8.9",
+      "golem.!exp.gap-35.v1.inf.gpu.d0.cuda.cores": 16384,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.cuda.enabled": true,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.memory.bandwidth.gib": 1008,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.memory.total.gib": 23.98828125,
+      "golem.!exp.gap-35.v1.inf.gpu.d0.model": "NVIDIA GeForce RTX 4090",
+      "golem.!exp.gap-35.v1.inf.gpu.d0.quantity": 4,
+      "golem.activity.caps.transfer.protocol": [
+        "gftp",
+        "https",
+        "http"
+      ],
+      "golem.com.payment.debit-notes.accept-timeout?": 240,
+      "golem.com.payment.platform.erc20-holesky-tglm.address": "0x2a624d89c9c30a424ee07c9ff9442f03a1f208cf",
+      "golem.com.payment.platform.erc20-mumbai-tglm.address": "0x2a624d89c9c30a424ee07c9ff9442f03a1f208cf",
+      "golem.com.payment.protocol.version": 2,
+      "golem.com.pricing.model": "linear",
+      "golem.com.pricing.model.linear.coeffs": [
+        0.0,
+        3e-05,
+        0.0
+      ],
+      "golem.com.scheme": "payu",
+      "golem.com.scheme.payu.debit-note.interval-sec?": 120,
+      "golem.com.scheme.payu.payment-timeout-sec?": 120,
+      "golem.com.usage.vector": [
+        "golem.usage.cpu_sec",
+        "golem.usage.duration_sec"
+      ],
+      "golem.inf.cpu.architecture": "x86_64",
+      "golem.inf.cpu.brand": "AMD Ryzen Threadripper PRO 7965WX 24-Cores",
+      "golem.inf.cpu.capabilities": [
+        "sse3",
+        "pclmulqdq",
+        "monitor",
+        "ssse3",
+        "fma",
+        "cmpxchg16b",
+        "pcid",
+        "sse41",
+        "sse42",
+        "x2apic",
+        "movbe",
+        "popcnt",
+        "aesni",
+        "xsave",
+        "osxsave",
+        "avx",
+        "f16c",
+        "rdrand",
+        "fpu",
+        "vme",
+        "de",
+        "pse",
+        "tsc",
+        "msr",
+        "pae",
+        "mce",
+        "cx8",
+        "apic",
+        "sep",
+        "mtrr",
+        "pge",
+        "mca",
+        "cmov",
+        "pat",
+        "pse36",
+        "clfsh",
+        "mmx",
+        "fxsr",
+        "sse",
+        "sse2",
+        "htt",
+        "fsgsbase",
+        "bmi1",
+        "avx2",
+        "smep",
+        "bmi2",
+        "rep_movsb_stosb",
+        "invpcid",
+        "rdtm",
+        "rdta",
+        "rdseed",
+        "adx",
+        "smap",
+        "clflushopt",
+        "sha",
+        "avx512f",
+        "avx512dq",
+        "avx512_ifma",
+        "avx512cd",
+        "avx512bw",
+        "avx512vl",
+        "clwb",
+        "umip",
+        "pku",
+        "ospke",
+        "rdpid"
+      ],
+      "golem.inf.cpu.cores": 24,
+      "golem.inf.cpu.model": "Stepping 1 Family 35 Model 40",
+      "golem.inf.cpu.threads": 32,
+      "golem.inf.cpu.vendor": "AuthenticAMD",
+      "golem.inf.mem.gib": 192.0,
+      "golem.inf.storage.gib": 2048.0,
+      "golem.node.debug.subnet": "gpu-test",
+      "golem.node.id.name": "pve2",
+      "golem.node.net.is-public": false,
+      "golem.runtime.capabilities": [
+        "inet",
+        "vpn",
+        "manifest-support",
+        "start-entrypoint",
+        "!exp:gpu"
+      ],
+      "golem.runtime.name": "vm-nvidia",
+      "golem.runtime.version": "0.1.4-rc1",
+      "golem.srv.caps.multi-activity": true,
+      "golem.srv.caps.payload-manifest": true
+    }
+  }
+]
+
 Cluster example created with success
 Node node0 created with success
 Node node0 is now ready
@@ -346,5 +457,5 @@ In more formal settings, such as a multi-course meal or a wine pairing dinner, i
 However, in more casual settings, such as a dinner party or a everyday meal, it's perfectly fine to place a single wine glass above the knife or even to the upper right of the water glass.
 
 I hope that helps!
-```
-
+  ```
+</details>
