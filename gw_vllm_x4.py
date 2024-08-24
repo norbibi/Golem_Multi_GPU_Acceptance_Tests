@@ -307,7 +307,7 @@ def wait_model_ready(model):
 
 def usage():
 	print("python3 test_gw_vllm_x4.py model node_name")
-	print("Model accpeted are:")
+	print("Model accepted are:")
 	for model in models_tested_with_succes.keys():
 		print(f"	- {model}")
 	quit()
