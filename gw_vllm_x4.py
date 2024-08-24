@@ -303,6 +303,13 @@ def wait_model_ready(model):
 		test_req = test_vllm(model, "Who won the World Cup in 2022?")
 		time.sleep(10)
 
+def usage():
+	print("python3 test_gw_vllm_x4.py model")
+	print("Model accpeted are:")
+	for model in models_tested_with_succes.keys():
+		print(f"	- {model}")
+	quit()
+
 #############################################################################
 
 def test_vllm(model, question):

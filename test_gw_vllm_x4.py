@@ -1,5 +1,5 @@
 import os
-
+import sys
 from gw_vllm_x4 import *
 
 ##### Parameters ############################################################
@@ -16,7 +16,16 @@ average_duration_hours = 1
 average_max_cost = 2
 payment_network = "holesky"
 huggingface_auth_token = os.environ['HF_TOKEN']
-model = "TheBloke/Mixtral-8x7B-Instruct-v0.1-GPTQ"
+
+#############################################################################
+
+if len(sys.argv) != 2:
+	usage()
+
+model = sys.argv[1]
+
+if model not in models_tested_with_succes.keys():
+	usage()
 
 #############################################################################
 
