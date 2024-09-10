@@ -7,13 +7,13 @@ from models_and_questions import *
 
 gw_base_url = 'http://localhost:8000'
 
-gw_get_proposals_url 	= gw_base_url + "/get-proposals"
-gw_create_cluster_url 	= gw_base_url + "/create-cluster"
-gw_get_cluster_url 		= gw_base_url + "/get-cluster"
-gw_delete_cluster_url 	= gw_base_url + "/delete-cluster"
-gw_create_node_url 		= gw_base_url + "/create-node"
-gw_get_node_url 		= gw_base_url + "/get-node"
-gw_delete_node_url 		= gw_base_url + "/delete-node"
+gw_get_proposals_url	= gw_base_url + "/get-proposals"
+gw_create_cluster_url	= gw_base_url + "/create-cluster"
+gw_get_cluster_url	= gw_base_url + "/get-cluster"
+gw_delete_cluster_url	= gw_base_url + "/delete-cluster"
+gw_create_node_url	= gw_base_url + "/create-node"
+gw_get_node_url		= gw_base_url + "/get-node"
+gw_delete_node_url	= gw_base_url + "/delete-node"
 
 #############################################################################
 
@@ -28,14 +28,12 @@ class PostResponse:
 		except:
 			print(self.value)
 
-
 def send_post_request(url, app_json, headers=None):
 	try:
 		req_res = requests.post(url, headers=headers, json=app_json)
 		return PostResponse(req_res.status_code, json.loads(req_res.text))
 	except:
 		return PostResponse(500, {"detail": "None"})
-
 
 def json_pretty_print(my_json):
 	print(json.dumps(my_json, indent=2))
@@ -68,28 +66,28 @@ def send_request_delete_node(json_node_id):
 def get_json_market_config(subnet_tag, min_mem_gib, min_storage_gib, min_gpu_quantity, node_name):
 	return {
 		"market_config": {
-		    "demand": {
-		      	"payloads": [
-			        {
-			          	"golem_workers.payloads.ClusterNodePayload": {
-			            	"runtime": "vm-nvidia",
-			            	"subnet_tag": subnet_tag,
-			            	"min_mem_gib": min_mem_gib,
-			            	"min_storage_gib": min_storage_gib,
-			            	"outbound_urls": [
-			              		"https://huggingface.co",
-			              		"https://cdn-lfs.huggingface.co",
-			              		"https://cdn-lfs-us-1.huggingface.co",
-			              		"https://gpu-provider.dev.golem.network"
-			            	]
-			          	}
-			        }
-		      	],
-		      	"constraints": [
-		        	f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}",
-		        	f"golem.node.id.name={node_name}"
-		      	]
-		    }
+			"demand": {
+				"payloads": [
+					{
+						"golem_workers.payloads.ClusterNodePayload": {
+							"runtime": "vm-nvidia",
+							"subnet_tag": subnet_tag,
+							"min_mem_gib": min_mem_gib,
+							"min_storage_gib": min_storage_gib,
+							"outbound_urls": [
+								"https://huggingface.co",
+								"https://cdn-lfs.huggingface.co",
+								"https://cdn-lfs-us-1.huggingface.co",
+								"https://gpu-provider.dev.golem.network"
+							]
+						}
+					}
+				],
+				"constraints": [
+					f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}",
+					f"golem.node.id.name={node_name}"
+				]
+			}
 		}
 	}
 
@@ -164,19 +162,19 @@ def get_json_node_config_vllm_multigpu(cluster_id, node_name, subnet_tag, min_me
 								"image_tag": "maugnorbert/vllm_multigpu:17",
 								"subnet_tag": subnet_tag,
 								"min_mem_gib": min_mem_gib,
-			            		"min_storage_gib": min_storage_gib,
-			            		"outbound_urls": [
-			              			"https://huggingface.co",
-			              			"https://cdn-lfs.huggingface.co",
-			              			"https://cdn-lfs-us-1.huggingface.co",
-			              			"https://gpu-provider.dev.golem.network"
-			            		]
+			            				"min_storage_gib": min_storage_gib,
+			            				"outbound_urls": [
+									"https://huggingface.co",
+									"https://cdn-lfs.huggingface.co",
+									"https://cdn-lfs-us-1.huggingface.co",
+									"https://gpu-provider.dev.golem.network"
+								]
 							}
 						}
 					],
 					"constraints": [
 						f"golem.!exp.gap-35.v1.inf.gpu.d0.quantity>={min_gpu_quantity}",
-		        		f"golem.node.id.name={node_name}"
+						f"golem.node.id.name={node_name}"
 					]
 				}
 			},
